@@ -362,20 +362,13 @@ export class QrPaymentComponent {
   }
 
   confirmPayment(): void {
-    // Manual confirmation by seller
-    const result = this.walletService.checkAndCompletePayment();
-    if (result.success && result.amount) {
+    // Manual confirmation by seller - directly credit wallet
+    const amount = this.amount();
+    const success = this.walletService.confirmManualPayment(amount);
+    
+    if (success) {
       this.paymentComplete.set(true);
-      this.receivedAmount.set(result.amount);
-      
-      // Auto-close after 2 seconds
-      setTimeout(() => {
-        this.close();
-      }, 2000);
-    } else {
-      // If no payment found, still allow manual confirmation with the expected amount
-      this.paymentComplete.set(true);
-      this.receivedAmount.set(this.amount());
+      this.receivedAmount.set(amount);
       
       // Auto-close after 2 seconds
       setTimeout(() => {

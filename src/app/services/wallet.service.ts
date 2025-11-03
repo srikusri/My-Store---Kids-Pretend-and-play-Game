@@ -195,6 +195,32 @@ export class WalletService {
     localStorage.removeItem(this.PAYMENT_REQUEST_KEY);
   }
 
+  // Manual payment confirmation - directly credit seller's wallet
+  confirmManualPayment(amount: number): boolean {
+    const sellerPersona = this.personaSignal();
+    if (!sellerPersona || sellerPersona.type !== PersonaType.SELLER) {
+      return false;
+    }
+
+    // Credit to seller
+    sellerPersona.wallet.balance += amount;
+    sellerPersona.wallet.transactions.unshift({
+      id: this.generateId(),
+      type: 'credit',
+      amount: amount,
+      description: `Payment received (manual confirmation)`,
+      timestamp: new Date()
+    });
+
+    this.personaSignal.set({ ...sellerPersona });
+    this.savePersona();
+
+    // Clear payment request
+    this.clearPaymentRequest();
+
+    return true;
+  }
+
   getTransactionHistory(limit?: number): WalletTransaction[] {
     const transactions = this.transactions();
     return limit ? transactions.slice(0, limit) : transactions;
