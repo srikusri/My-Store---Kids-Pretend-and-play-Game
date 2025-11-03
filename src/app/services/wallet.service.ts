@@ -216,7 +216,7 @@ export class WalletService {
       id: this.generateId(),
       type: 'credit',
       amount: amount,
-      description: `Cash payment received`,
+      description: `UPI payment received`,
       timestamp: new Date()
     });
 
