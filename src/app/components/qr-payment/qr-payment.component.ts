@@ -415,10 +415,10 @@ export class QrPaymentComponent {
       this.paymentComplete.set(true);
       this.receivedAmount.set(amount);
       
-      // Auto-close after 2 seconds
+      // Close immediately with a small delay for UI feedback (500ms)
       setTimeout(() => {
         this.close();
-      }, 2000);
+      }, 500);
     } else {
       // If failed, reset processing so user can try again
       this.processing.set(false);
@@ -432,8 +432,11 @@ export class QrPaymentComponent {
   }
 
   close(): void {
-    this.paymentCompleted.emit(this.receivedAmount());
+    // Store amount before any cleanup can reset it
+    const finalAmount = this.receivedAmount();
     this.showQR.set(false);
+    // Emit after setting showQR to false to ensure cleanup doesn't interfere
+    this.paymentCompleted.emit(finalAmount);
   }
 
   private cleanup(): void {

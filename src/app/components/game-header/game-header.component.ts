@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GameService } from '../../services/game.service';
 import { SoundService } from '../../services/sound.service';
+import { WalletService } from '../../services/wallet.service';
+import { PersonaType } from '../../models/wallet.model';
 import { SettingsComponent } from '../settings/settings.component';
 
 @Component({
@@ -525,7 +527,8 @@ export class GameHeaderComponent {
 
   constructor(
     public gameService: GameService,
-    private soundService: SoundService
+    private soundService: SoundService,
+    private walletService: WalletService
   ) {
     this.loadStoreName();
   }
@@ -535,9 +538,16 @@ export class GameHeaderComponent {
     if (saved) {
       this.storeName.set(saved);
     } else {
-      // First time user - show welcome modal
-      this.showStoreNameModal.set(true);
-      this.tempStoreName.set('');
+      // First time seller - show welcome modal
+      // Buyers don't need a store name
+      const persona = this.walletService.persona();
+      if (persona?.type === PersonaType.SELLER) {
+        this.showStoreNameModal.set(true);
+        this.tempStoreName.set('');
+      } else {
+        // Default name for buyers
+        this.storeName.set('My Shop');
+      }
     }
   }
 
