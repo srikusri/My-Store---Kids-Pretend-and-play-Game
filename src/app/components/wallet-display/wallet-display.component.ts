@@ -101,6 +101,50 @@ import { CurrencyService } from '../../services/currency.service';
             </div>
           </div>
         }
+
+        <!-- Math Challenge Modal -->
+        @if (showMathChallenge()) {
+          <div class="modal-overlay" (click)="closeMathChallenge()">
+            <div class="modal-content math-modal" (click)="$event.stopPropagation()">
+              <div class="modal-header math-header">
+                <h2>🧮 Solve to Earn Money!</h2>
+                <button class="close-button" (click)="closeMathChallenge()">&times;</button>
+              </div>
+
+              <div class="modal-body math-body">
+                <div class="math-challenge">
+                  <div class="challenge-instruction">
+                    <p>Solve this math problem to add {{ formatQuickAmount(pendingAmount()) }} to your wallet!</p>
+                  </div>
+                  
+                  <div class="math-problem">
+                    <div class="equation">{{ mathQuestion() }} = ?</div>
+                  </div>
+                  
+                  <div class="answer-section">
+                    <input 
+                      type="number" 
+                      [(ngModel)]="userAnswer"
+                      placeholder="Your answer"
+                      class="math-input"
+                      [class.error]="mathError()"
+                      (keyup.enter)="submitMathAnswer()">
+                    
+                    @if (mathError()) {
+                      <div class="error-message">
+                        ❌ Oops! Try again! Think carefully...
+                      </div>
+                    }
+                  </div>
+                  
+                  <button class="btn btn-success btn-large" (click)="submitMathAnswer()">
+                    ✓ Submit Answer
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
     </div>
   `,
   styles: [`
@@ -397,6 +441,98 @@ import { CurrencyService } from '../../services/currency.service';
       }
     }
 
+    /* Math Challenge Modal Styles */
+    .math-modal {
+      max-width: 500px;
+    }
+
+    .math-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .math-body {
+      padding: 2rem;
+    }
+
+    .math-challenge {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .challenge-instruction {
+      text-align: center;
+      
+      p {
+        font-size: 1.125rem;
+        color: #555;
+        font-weight: 600;
+        margin: 0;
+      }
+    }
+
+    .math-problem {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      padding: 2rem 3rem;
+      border-radius: 20px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    .equation {
+      font-size: 3rem;
+      font-weight: 800;
+      color: white;
+      text-align: center;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .answer-section {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .math-input {
+      width: 100%;
+      max-width: 200px;
+      padding: 1rem 1.5rem;
+      font-size: 2rem;
+      font-weight: 700;
+      text-align: center;
+      border: 3px solid #667eea;
+      border-radius: 16px;
+      outline: none;
+      transition: all 0.3s;
+    }
+
+    .math-input:focus {
+      border-color: #764ba2;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+      transform: scale(1.05);
+    }
+
+    .math-input.error {
+      border-color: #ff6b6b;
+      animation: shake 0.5s;
+    }
+
+    .error-message {
+      color: #ff6b6b;
+      font-weight: 700;
+      font-size: 1.125rem;
+      text-align: center;
+      animation: fadeIn 0.3s;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      75% { transform: translateX(10px); }
+    }
+
     @media (max-width: 768px) {
       .wallet-button {
         padding: 0.5rem 1rem;
@@ -425,6 +561,14 @@ import { CurrencyService } from '../../services/currency.service';
       .custom-amount .btn {
         width: 100%;
       }
+
+      .equation {
+        font-size: 2rem;
+      }
+
+      .math-input {
+        font-size: 1.5rem;
+      }
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -432,6 +576,12 @@ import { CurrencyService } from '../../services/currency.service';
 export class WalletDisplayComponent {
   showModal = signal(false);
   customAmount = signal<number | null>(null);
+  showMathChallenge = signal(false);
+  mathQuestion = signal('');
+  mathAnswer = signal(0);
+  userAnswer = signal('');
+  pendingAmount = signal(0);
+  mathError = signal(false);
 
   constructor(
     public walletService: WalletService,
@@ -447,18 +597,79 @@ export class WalletDisplayComponent {
   }
 
   loadQuickAmount(amount: number): void {
-    if (this.walletService.loadMoney(amount)) {
-      this.customAmount.set(null);
-    }
+    this.pendingAmount.set(amount);
+    this.generateMathProblem();
+    this.showMathChallenge.set(true);
   }
 
   loadCustomAmount(): void {
     const amount = this.customAmount();
     if (amount && amount > 0) {
+      this.pendingAmount.set(amount);
+      this.generateMathProblem();
+      this.showMathChallenge.set(true);
+    }
+  }
+
+  generateMathProblem(): void {
+    const num1 = Math.floor(Math.random() * 20) + 1; // 1-20
+    const num2 = Math.floor(Math.random() * 20) + 1; // 1-20
+    const operations = ['+', '-', '×'];
+    const operation = operations[Math.floor(Math.random() * operations.length)];
+    
+    let answer: number;
+    let question: string;
+    
+    switch(operation) {
+      case '+':
+        answer = num1 + num2;
+        question = `${num1} + ${num2}`;
+        break;
+      case '-':
+        // Ensure positive result
+        const larger = Math.max(num1, num2);
+        const smaller = Math.min(num1, num2);
+        answer = larger - smaller;
+        question = `${larger} - ${smaller}`;
+        break;
+      case '×':
+        // Keep numbers smaller for multiplication
+        const mult1 = Math.floor(Math.random() * 10) + 1;
+        const mult2 = Math.floor(Math.random() * 10) + 1;
+        answer = mult1 * mult2;
+        question = `${mult1} × ${mult2}`;
+        break;
+      default:
+        answer = num1 + num2;
+        question = `${num1} + ${num2}`;
+    }
+    
+    this.mathQuestion.set(question);
+    this.mathAnswer.set(answer);
+    this.userAnswer.set('');
+    this.mathError.set(false);
+  }
+
+  submitMathAnswer(): void {
+    const userAns = parseInt(this.userAnswer());
+    if (userAns === this.mathAnswer()) {
+      // Correct answer!
+      const amount = this.pendingAmount();
       if (this.walletService.loadMoney(amount)) {
         this.customAmount.set(null);
+        this.showMathChallenge.set(false);
+        this.mathError.set(false);
       }
+    } else {
+      // Wrong answer
+      this.mathError.set(true);
     }
+  }
+
+  closeMathChallenge(): void {
+    this.showMathChallenge.set(false);
+    this.mathError.set(false);
+    this.userAnswer.set('');
   }
 
   switchPersona(): void {
