@@ -7,35 +7,33 @@
     
     <header class="app-header">
       <div class="header-content">
-        <div class="wallet-and-nav">
-          <app-wallet-display></app-wallet-display>
+        <nav class="main-nav">
+          @if (walletService.persona()?.type === PersonaType.SELLER) {
+            <button 
+              [class]="'btn mode-button ' + (currentMode() === AppMode.INVENTORY ? 'btn-primary' : 'btn-secondary')"
+              (click)="switchMode(AppMode.INVENTORY)">
+              <span class="button-icon">📦</span>
+              <span>Add Items</span>
+            </button>
+            <button 
+              [class]="'btn mode-button ' + (currentMode() === AppMode.SALES ? 'btn-primary' : 'btn-secondary')"
+              (click)="switchMode(AppMode.SALES)">
+              <span class="button-icon">💰</span>
+              <span>Sell Items</span>
+            </button>
+          }
           
-          <nav class="mode-switcher">
-            @if (walletService.persona()?.type === PersonaType.SELLER) {
-              <button 
-                [class]="'btn mode-button ' + (currentMode() === AppMode.INVENTORY ? 'btn-primary' : 'btn-secondary')"
-                (click)="switchMode(AppMode.INVENTORY)">
-                <span class="button-icon">📦</span>
-                <span>Add Items</span>
-              </button>
-              <button 
-                [class]="'btn mode-button ' + (currentMode() === AppMode.SALES ? 'btn-primary' : 'btn-secondary')"
-                (click)="switchMode(AppMode.SALES)">
-                <span class="button-icon">💰</span>
-                <span>Sell Items</span>
-              </button>
-            }
-            
-            @if (walletService.persona()?.type === PersonaType.BUYER) {
-              <button 
-                class="btn mode-button btn-success"
-                (click)="openPaymentScanner()">
-                <span class="button-icon">📱</span>
-                <span>Scan to Pay</span>
-              </button>
-            }
-          </nav>
-        </div>
+          @if (walletService.persona()?.type === PersonaType.BUYER) {
+            <button 
+              class="btn mode-button btn-success"
+              (click)="openPaymentScanner()">
+              <span class="button-icon">📱</span>
+              <span>Scan to Pay</span>
+            </button>
+          }
+          
+          <app-wallet-display></app-wallet-display>
+        </nav>
       </div>
     </header>
 
