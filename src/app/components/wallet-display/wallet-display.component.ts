@@ -9,12 +9,11 @@ import { PersonaType } from '../../models/wallet.model';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    @if (walletService.hasPersona()) {
-      <div class="wallet-container">
-        <button class="wallet-button" (click)="showModal.set(true)">
-          <span class="wallet-icon">💰</span>
-          <span class="wallet-balance">\${{ walletService.balance().toFixed(2) }}</span>
-        </button>
+    <div class="wallet-container">
+      <button class="wallet-button" (click)="showModal.set(true)">
+        <span class="wallet-icon">💰</span>
+        <span class="wallet-balance">\${{ walletService.balance().toFixed(2) }}</span>
+      </button>
 
         @if (showModal()) {
           <div class="modal-overlay" (click)="showModal.set(false)">
@@ -99,8 +98,7 @@ import { PersonaType } from '../../models/wallet.model';
             </div>
           </div>
         }
-      </div>
-    }
+    </div>
   `,
   styles: [`
     .wallet-container {

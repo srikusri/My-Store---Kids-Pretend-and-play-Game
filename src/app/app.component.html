@@ -2,6 +2,13 @@
   <!-- Persona Selection (shows if no persona) -->
   <app-persona-selection></app-persona-selection>
 
+  <!-- Debug Info (temporary) -->
+  <div style="position: fixed; top: 0; right: 0; background: rgba(0,0,0,0.8); color: white; padding: 10px; font-size: 12px; z-index: 9999; max-width: 300px;">
+    <div>hasPersona: {{ walletService.hasPersona() }}</div>
+    <div>persona: {{ walletService.persona() | json }}</div>
+    <div>balance: {{ walletService.balance() }}</div>
+  </div>
+
   @if (walletService.hasPersona()) {
     <app-game-header></app-game-header>
     

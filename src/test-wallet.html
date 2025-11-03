@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Wallet Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        .output {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Wallet Feature Test Page</h1>
+    
+    <div class="test-section">
+        <h2>LocalStorage Test</h2>
+        <button onclick="checkPersona()">Check Persona</button>
+        <button onclick="createSellerPersona()">Create Seller Persona</button>
+        <button onclick="createBuyerPersona()">Create Buyer Persona</button>
+        <button onclick="clearData()">Clear All Data</button>
+        <div id="persona-output" class="output"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Wallet Operations</h2>
+        <button onclick="loadMoney(50)">Load $50</button>
+        <button onclick="checkBalance()">Check Balance</button>
+        <button onclick="viewTransactions()">View Transactions</button>
+        <div id="wallet-output" class="output"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Quick Actions</h2>
+        <button onclick="window.location.href='http://localhost:8080'">Open Main App</button>
+        <button onclick="openDevTools()">Open Console</button>
+    </div>
+
+    <script>
+        function checkPersona() {
+            const persona = localStorage.getItem('kids_wallet_persona');
+            const output = document.getElementById('persona-output');
+            if (persona) {
+                const data = JSON.parse(persona);
+                output.textContent = '✅ Persona Found:\n' + JSON.stringify(data, null, 2);
+            } else {
+                output.textContent = '❌ No persona found in localStorage';
+            }
+        }
+
+        function createSellerPersona() {
+            const persona = {
+                id: Date.now().toString(),
+                type: 'seller',
+                name: 'Test Seller',
+                wallet: {
+                    balance: 0,
+                    transactions: []
+                },
+                createdAt: new Date().toISOString()
+            };
+            localStorage.setItem('kids_wallet_persona', JSON.stringify(persona));
+            checkPersona();
+        }
+
+        function createBuyerPersona() {
+            const persona = {
+                id: Date.now().toString(),
+                type: 'buyer',
+                name: 'Test Buyer',
+                wallet: {
+                    balance: 100,
+                    transactions: [{
+                        id: Date.now().toString(),
+                        type: 'load',
+                        amount: 100,
+                        description: 'Welcome bonus',
+                        timestamp: new Date().toISOString()
+                    }]
+                },
+                createdAt: new Date().toISOString()
+            };
+            localStorage.setItem('kids_wallet_persona', JSON.stringify(persona));
+            checkPersona();
+        }
+
+        function clearData() {
+            localStorage.removeItem('kids_wallet_persona');
+            localStorage.removeItem('kids_payment_request');
+            document.getElementById('persona-output').textContent = '🗑️ All wallet data cleared!';
+            document.getElementById('wallet-output').textContent = '';
+        }
+
+        function loadMoney(amount) {
+            const persona = localStorage.getItem('kids_wallet_persona');
+            const output = document.getElementById('wallet-output');
+            if (!persona) {
+                output.textContent = '❌ Create a persona first!';
+                return;
+            }
+            
+            const data = JSON.parse(persona);
+            data.wallet.balance += amount;
+            data.wallet.transactions.unshift({
+                id: Date.now().toString(),
+                type: 'load',
+                amount: amount,
+                description: 'Test load money',
+                timestamp: new Date().toISOString()
+            });
+            
+            localStorage.setItem('kids_wallet_persona', JSON.stringify(data));
+            output.textContent = `✅ Loaded $${amount}\nNew Balance: $${data.wallet.balance}`;
+        }
+
+        function checkBalance() {
+            const persona = localStorage.getItem('kids_wallet_persona');
+            const output = document.getElementById('wallet-output');
+            if (!persona) {
+                output.textContent = '❌ Create a persona first!';
+                return;
+            }
+            
+            const data = JSON.parse(persona);
+            output.textContent = `💰 Current Balance: $${data.wallet.balance}\n` +
+                               `📊 Total Transactions: ${data.wallet.transactions.length}`;
+        }
+
+        function viewTransactions() {
+            const persona = localStorage.getItem('kids_wallet_persona');
+            const output = document.getElementById('wallet-output');
+            if (!persona) {
+                output.textContent = '❌ Create a persona first!';
+                return;
+            }
+            
+            const data = JSON.parse(persona);
+            output.textContent = '📋 Transactions:\n' + 
+                JSON.stringify(data.wallet.transactions, null, 2);
+        }
+
+        function openDevTools() {
+            alert('Press F12 or Cmd+Option+I to open Developer Tools');
+        }
+
+        // Auto-check on load
+        window.onload = checkPersona;
+    </script>
+</body>
+</html>
+
