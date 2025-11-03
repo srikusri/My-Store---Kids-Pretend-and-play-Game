@@ -64,6 +64,54 @@
   }
 }
 
+.scanning-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+}
+
+.scan-mode-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: white;
+  border: 3px solid #6c757d;
+  color: #333;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  
+  &.single-mode {
+    border-color: #28a745;
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    
+    &:hover {
+      background: linear-gradient(135deg, #c3e6cb 0%, #b1dfbb 100%);
+      transform: scale(1.05);
+    }
+  }
+  
+  &.quantity-mode {
+    border-color: #007bff;
+    background: linear-gradient(135deg, #cfe2ff 0%, #9ec5fe 100%);
+    
+    &:hover {
+      background: linear-gradient(135deg, #9ec5fe 0%, #6ea8fe 100%);
+      transform: scale(1.05);
+    }
+  }
+  
+  .mode-icon {
+    font-size: 1.5rem;
+  }
+  
+  .mode-text {
+    font-weight: 700;
+    font-size: 1rem;
+  }
+}
+
 .scan-quantity-control {
   display: flex;
   align-items: center;
@@ -72,18 +120,29 @@
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 2px solid #007bff;
   
   label {
-    font-weight: 500;
-    color: #495057;
+    font-weight: 600;
+    color: #007bff;
+    font-size: 0.875rem;
   }
   
   .quantity-input {
     width: 80px;
     padding: 0.5rem;
-    border: 1px solid #ced4da;
+    border: 2px solid #007bff;
     border-radius: 6px;
-    font-size: 1rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+    text-align: center;
+    color: #007bff;
+    
+    &:focus {
+      outline: none;
+      border-color: #0056b3;
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+    }
   }
 }
 
@@ -454,6 +513,35 @@
 
 @media (max-width: 768px) {
   .sales-container {
+    padding: 1rem;
+  }
+  
+  .scanning-controls {
+    width: 100%;
+    flex-direction: column;
+    
+    button {
+      width: 100%;
+      min-height: 52px;
+    }
+  }
+  
+  .scan-mode-toggle {
+    justify-content: center;
+    padding: 1rem;
+    
+    .mode-icon {
+      font-size: 1.75rem;
+    }
+    
+    .mode-text {
+      font-size: 1.125rem;
+    }
+  }
+  
+  .scan-quantity-control {
+    width: 100%;
+    justify-content: space-between;
     padding: 1rem;
   }
   

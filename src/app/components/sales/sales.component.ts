@@ -35,6 +35,7 @@ export class SalesComponent {
   completedSale = signal<Sale | null>(null);
   scanQuantity = signal(1);
   pendingSaleId = signal<string>('');
+  singleScanMode = signal(true); // Default to single scan mode
 
   // Barcode formats to scan
   barcodeFormats = [
@@ -82,16 +83,25 @@ export class SalesComponent {
       return;
     }
 
-    const success = this.cartService.addToCart(item, this.scanQuantity());
+    // Use 1 in single scan mode, or the set quantity in quantity mode
+    const quantityToAdd = this.singleScanMode() ? 1 : this.scanQuantity();
+    const success = this.cartService.addToCart(item, quantityToAdd);
 
     if (success) {
       this.soundService.playSound('success');
       this.soundService.playCoinSound();
-      this.showToast(`🛒 ${item.name} added to cart!`, 'success');
+      const qtyText = this.singleScanMode() ? '' : ` (x${quantityToAdd})`;
+      this.showToast(`🛒 ${item.name}${qtyText} added to cart!`, 'success');
     } else {
       this.soundService.playSound('error');
       this.showToast('😬 Not enough in stock!', 'error');
     }
+  }
+
+  toggleScanMode(): void {
+    this.singleScanMode.set(!this.singleScanMode());
+    const mode = this.singleScanMode() ? 'Single Scan' : 'Quantity Mode';
+    this.showToast(`📱 Switched to ${mode}`, 'info');
   }
 
   onScanError(error: Error): void {

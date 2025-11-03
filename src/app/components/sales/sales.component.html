@@ -32,17 +32,36 @@
         </button>
       }
     } @else {
-      <button class="btn btn-danger btn-large fun-button" (click)="stopScanning()">
-        ⏹️ Stop
-      </button>
-      <div class="scan-quantity-control">
-        <label>How many?</label>
-        <input 
-          type="number" 
-          min="1" 
-          [value]="scanQuantity()"
-          (input)="scanQuantity.set(+$any($event.target).value)"
-          class="quantity-input">
+      <div class="scanning-controls">
+        <button class="btn btn-danger btn-large fun-button" (click)="stopScanning()">
+          ⏹️ Stop Scanning
+        </button>
+        
+        <button 
+          class="btn btn-large fun-button scan-mode-toggle"
+          [class.single-mode]="singleScanMode()"
+          [class.quantity-mode]="!singleScanMode()"
+          (click)="toggleScanMode()">
+          @if (singleScanMode()) {
+            <span class="mode-icon">1️⃣</span>
+            <span class="mode-text">One at a Time</span>
+          } @else {
+            <span class="mode-icon">🔢</span>
+            <span class="mode-text">Quantity Mode</span>
+          }
+        </button>
+
+        @if (!singleScanMode()) {
+          <div class="scan-quantity-control">
+            <label>Quantity per scan:</label>
+            <input 
+              type="number" 
+              min="1" 
+              [value]="scanQuantity()"
+              (input)="scanQuantity.set(+$any($event.target).value)"
+              class="quantity-input">
+          </div>
+        }
       </div>
     }
   </div>
