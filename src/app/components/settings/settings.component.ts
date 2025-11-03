@@ -41,18 +41,33 @@ import { CurrencyService } from '../../services/currency.service';
               <div class="setting-item">
                 <label for="currency-select" class="currency-label">
                   <span class="label-text">Select your currency:</span>
-                  <span class="current-currency">{{ currencyService.currency().symbol }} {{ currencyService.currency().code }}</span>
+                  <span class="current-currency">{{ getCurrentCurrencyDisplay() }}</span>
                 </label>
                 <select 
                   id="currency-select"
                   class="currency-select"
-                  [value]="currencyService.currencyCode()"
+                  [value]="getCurrentCurrencyCode()"
                   (change)="onCurrencyChange($any($event.target).value)">
-                  @for (currency of currencyService.availableCurrencies; track currency.code) {
-                    <option [value]="currency.code">
-                      {{ currency.symbol }} {{ currency.name }} ({{ currency.code }})
-                    </option>
-                  }
+                  <option value="USD">$ US Dollar (USD)</option>
+                  <option value="EUR">€ Euro (EUR)</option>
+                  <option value="GBP">£ British Pound (GBP)</option>
+                  <option value="INR">₹ Indian Rupee (INR)</option>
+                  <option value="JPY">¥ Japanese Yen (JPY)</option>
+                  <option value="CNY">¥ Chinese Yuan (CNY)</option>
+                  <option value="AUD">A$ Australian Dollar (AUD)</option>
+                  <option value="CAD">C$ Canadian Dollar (CAD)</option>
+                  <option value="CHF">Fr Swiss Franc (CHF)</option>
+                  <option value="SEK">kr Swedish Krona (SEK)</option>
+                  <option value="NZD">NZ$ New Zealand Dollar (NZD)</option>
+                  <option value="SGD">S$ Singapore Dollar (SGD)</option>
+                  <option value="HKD">HK$ Hong Kong Dollar (HKD)</option>
+                  <option value="KRW">₩ South Korean Won (KRW)</option>
+                  <option value="MXN">Mex$ Mexican Peso (MXN)</option>
+                  <option value="BRL">R$ Brazilian Real (BRL)</option>
+                  <option value="ZAR">R South African Rand (ZAR)</option>
+                  <option value="AED">د.إ UAE Dirham (AED)</option>
+                  <option value="SAR">ر.س Saudi Riyal (SAR)</option>
+                  <option value="TRY">₺ Turkish Lira (TRY)</option>
                 </select>
               </div>
             </div>
@@ -586,6 +601,25 @@ export class SettingsComponent {
   onCurrencyChange(currencyCode: string): void {
     this.currencyService.setCurrency(currencyCode);
     this.soundService.playSound('success');
+  }
+
+  getCurrentCurrencyCode(): string {
+    try {
+      return this.currencyService.currencyCode();
+    } catch (error) {
+      console.error('Error getting currency code:', error);
+      return 'USD';
+    }
+  }
+
+  getCurrentCurrencyDisplay(): string {
+    try {
+      const curr = this.currencyService.currency();
+      return `${curr.symbol} ${curr.code}`;
+    } catch (error) {
+      console.error('Error getting currency display:', error);
+      return '$ USD';
+    }
   }
 
   unlockedAchievements(): number {
