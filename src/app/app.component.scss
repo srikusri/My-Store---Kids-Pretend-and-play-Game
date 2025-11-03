@@ -31,16 +31,6 @@
   }
 }
 
-.logo {
-  h1 {
-    font-size: 1.125rem;
-    font-weight: 800;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-  }
-}
 
 .persona-info {
   display: flex;
@@ -233,11 +223,6 @@
     }
   }
   
-  .logo h1 {
-    font-size: 1rem;
-    text-align: center;
-  }
-  
   .mode-switcher {
     width: 100%;
     justify-content: center;
@@ -293,10 +278,6 @@
 }
 
 @media (max-width: 480px) {
-  .logo h1 {
-    font-size: 0.938rem;
-  }
-
   .mode-switcher {
     display: grid;
     grid-template-columns: 1fr 1fr;
