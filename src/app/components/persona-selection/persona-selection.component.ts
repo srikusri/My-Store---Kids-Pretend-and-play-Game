@@ -14,57 +14,59 @@ import { PersonaType } from '../../models/wallet.model';
         <div class="persona-modal">
           <div class="persona-header">
             <h1>👋 Welcome to My Shop Game!</h1>
-            <p>Choose how you want to play</p>
+            <p>{{ selectedType() ? 'What\'s your name?' : 'Choose how you want to play' }}</p>
           </div>
 
-          <div class="persona-options">
-            <button 
-              class="persona-card" 
-              [class.selected]="selectedType() === PersonaType.SELLER"
-              (click)="selectPersona(PersonaType.SELLER)">
-              <div class="persona-icon seller">🏪</div>
-              <h2>I'm a Seller</h2>
-              <p>Manage your store, scan items, and receive payments</p>
-              <div class="persona-features">
-                <span>📦 Add inventory</span>
-                <span>💰 Sell products</span>
-                <span>💳 Receive money</span>
-              </div>
-            </button>
+          @if (!selectedType()) {
+            <div class="persona-buttons">
+              <button 
+                class="simple-btn seller-btn"
+                (click)="selectPersona(PersonaType.SELLER)">
+                <span class="btn-icon">🏪</span>
+                <span class="btn-text">I'm a Seller</span>
+              </button>
 
-            <button 
-              class="persona-card" 
-              [class.selected]="selectedType() === PersonaType.BUYER"
-              (click)="selectPersona(PersonaType.BUYER)">
-              <div class="persona-icon buyer">🛍️</div>
-              <h2>I'm a Buyer</h2>
-              <p>Shop for items and pay with your wallet</p>
-              <div class="persona-features">
-                <span>💵 Start with $100</span>
-                <span>🛒 Buy products</span>
-                <span>📱 Scan QR to pay</span>
-              </div>
-            </button>
-          </div>
-
-          @if (selectedType()) {
+              <button 
+                class="simple-btn buyer-btn"
+                (click)="selectPersona(PersonaType.BUYER)">
+                <span class="btn-icon">🛍️</span>
+                <span class="btn-text">I'm a Buyer</span>
+              </button>
+            </div>
+          } @else {
             <div class="name-input-section">
-              <label>What's your name?</label>
+              <div class="selected-persona-display">
+                <span class="persona-icon-large">
+                  {{ selectedType() === PersonaType.SELLER ? '🏪' : '🛍️' }}
+                </span>
+                <span class="persona-label">
+                  {{ selectedType() === PersonaType.SELLER ? 'Seller' : 'Buyer' }}
+                </span>
+              </div>
+
               <input 
                 type="text" 
                 [(ngModel)]="personaName"
-                [placeholder]="selectedType() === PersonaType.SELLER ? 'Store Owner Name' : 'Your Name'"
+                [placeholder]="selectedType() === PersonaType.SELLER ? 'Enter store owner name' : 'Enter your name'"
                 maxlength="20"
                 class="name-input"
-                (keyup.enter)="confirmSelection()">
-            </div>
+                (keyup.enter)="confirmSelection()"
+                autofocus>
 
-            <button 
-              class="btn btn-primary btn-large start-btn"
-              (click)="confirmSelection()"
-              [disabled]="!personaName().trim()">
-              🚀 Start Playing as {{ selectedType() === PersonaType.SELLER ? 'Seller' : 'Buyer' }}
-            </button>
+              <div class="button-group">
+                <button 
+                  class="btn btn-secondary"
+                  (click)="goBack()">
+                  ← Back
+                </button>
+                <button 
+                  class="btn btn-primary btn-large"
+                  (click)="confirmSelection()"
+                  [disabled]="!personaName().trim()">
+                  Start Playing 🚀
+                </button>
+              </div>
+            </div>
           }
         </div>
       </div>
@@ -89,7 +91,7 @@ import { PersonaType } from '../../models/wallet.model';
       background: white;
       border-radius: 24px;
       width: 95%;
-      max-width: 900px;
+      max-width: 600px;
       padding: 3rem;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
       animation: slideUp 0.5s;
@@ -115,102 +117,89 @@ import { PersonaType } from '../../models/wallet.model';
       margin: 0;
     }
 
-    .persona-options {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 2rem;
+    .persona-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
       margin-bottom: 2rem;
     }
 
-    .persona-card {
-      background: white;
-      border: 3px solid #e0e0e0;
-      border-radius: 20px;
-      padding: 2rem;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.3s;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .persona-card:hover {
-      transform: translateY(-8px);
-      border-color: #667eea;
-      box-shadow: 0 12px 24px rgba(102, 126, 234, 0.2);
-    }
-
-    .persona-card.selected {
-      border-color: #667eea;
-      background: linear-gradient(135deg, #f5f7ff 0%, #e8ecff 100%);
-      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
-    }
-
-    .persona-icon {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
+    .simple-btn {
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 4rem;
-      margin-bottom: 1.5rem;
-      animation: bounce 2s infinite;
-    }
-
-    .persona-icon.seller {
-      background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
-    }
-
-    .persona-icon.buyer {
-      background: linear-gradient(135deg, #FF6B9D 0%, #C44569 100%);
-    }
-
-    .persona-card h2 {
-      font-size: 1.75rem;
-      margin: 0 0 1rem 0;
-      color: #333;
-    }
-
-    .persona-card p {
-      font-size: 1.125rem;
-      color: #666;
-      margin: 0 0 1.5rem 0;
-    }
-
-    .persona-features {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-      width: 100%;
-    }
-
-    .persona-features span {
-      padding: 0.75rem 1rem;
+      gap: 1rem;
+      padding: 2rem;
+      border: 3px solid;
+      border-radius: 16px;
       background: white;
-      border-radius: 12px;
-      font-size: 1rem;
-      font-weight: 500;
-      color: #333;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .simple-btn:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .seller-btn {
+      border-color: #56ab2f;
+      color: #56ab2f;
+    }
+
+    .seller-btn:hover {
+      background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+      color: white;
+      border-color: #56ab2f;
+    }
+
+    .buyer-btn {
+      border-color: #FF6B9D;
+      color: #FF6B9D;
+    }
+
+    .buyer-btn:hover {
+      background: linear-gradient(135deg, #FF6B9D 0%, #C44569 100%);
+      color: white;
+      border-color: #FF6B9D;
+    }
+
+    .btn-icon {
+      font-size: 3rem;
+    }
+
+    .btn-text {
+      font-size: 1.75rem;
     }
 
     .name-input-section {
       text-align: center;
+      animation: fadeIn 0.3s;
+    }
+
+    .selected-persona-display {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
       margin-bottom: 2rem;
     }
 
-    .name-input-section label {
-      display: block;
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: #333;
-      margin-bottom: 1rem;
+    .persona-icon-large {
+      font-size: 5rem;
+      animation: bounce 2s infinite;
+    }
+
+    .persona-label {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #667eea;
     }
 
     .name-input {
       width: 100%;
-      max-width: 400px;
       padding: 1.25rem 1.5rem;
       font-size: 1.25rem;
       border: 3px solid #e0e0e0;
@@ -218,6 +207,7 @@ import { PersonaType } from '../../models/wallet.model';
       text-align: center;
       font-weight: 600;
       transition: all 0.3s;
+      margin-bottom: 2rem;
     }
 
     .name-input:focus {
@@ -226,11 +216,15 @@ import { PersonaType } from '../../models/wallet.model';
       box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
     }
 
-    .start-btn {
-      width: 100%;
-      max-width: 400px;
-      margin: 0 auto;
-      display: block;
+    .button-group {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    .button-group .btn {
+      flex: 1;
+      max-width: 200px;
     }
 
     @keyframes fadeIn {
@@ -267,23 +261,28 @@ import { PersonaType } from '../../models/wallet.model';
         font-size: 1rem;
       }
 
-      .persona-options {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
+      .simple-btn {
+        padding: 1.5rem;
       }
 
-      .persona-icon {
-        width: 100px;
-        height: 100px;
-        font-size: 3rem;
+      .btn-icon {
+        font-size: 2.5rem;
       }
 
-      .persona-card h2 {
+      .btn-text {
         font-size: 1.5rem;
       }
 
-      .persona-card p {
-        font-size: 1rem;
+      .persona-icon-large {
+        font-size: 4rem;
+      }
+
+      .button-group {
+        flex-direction: column;
+      }
+
+      .button-group .btn {
+        max-width: 100%;
       }
     }
   `],
@@ -299,6 +298,11 @@ export class PersonaSelectionComponent {
 
   selectPersona(type: PersonaType): void {
     this.selectedType.set(type);
+    this.personaName.set('');
+  }
+
+  goBack(): void {
+    this.selectedType.set(null);
     this.personaName.set('');
   }
 
