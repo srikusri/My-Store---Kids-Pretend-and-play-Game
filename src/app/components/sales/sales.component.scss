@@ -378,17 +378,18 @@
   .close-button {
     background: none;
     border: none;
-    font-size: 2rem;
+    font-size: 3rem;
     color: #666;
     cursor: pointer;
     padding: 0;
-    width: 2rem;
-    height: 2rem;
+    width: 3.5rem;
+    height: 3.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
     transition: all 0.2s;
+    line-height: 1;
     
     &:hover {
       background: #f8f9fa;
@@ -653,9 +654,9 @@
     }
     
     .close-button {
-      width: 2.5rem;
-      height: 2.5rem;
-      font-size: 1.75rem;
+      width: 3.5rem;
+      height: 3.5rem;
+      font-size: 2.5rem;
     }
   }
   

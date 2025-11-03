@@ -273,16 +273,17 @@ import { CurrencyService } from '../../services/currency.service';
     .close-button {
       background: none;
       border: none;
-      font-size: 2rem;
+      font-size: 3rem;
       color: white;
       cursor: pointer;
-      width: 40px;
-      height: 40px;
+      width: 56px;
+      height: 56px;
       display: flex;
       align-items: center;
       justify-content: center;
       border-radius: 50%;
       transition: background 0.2s;
+      line-height: 1;
     }
 
     .close-button:hover {
