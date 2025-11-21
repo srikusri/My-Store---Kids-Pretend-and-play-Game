@@ -360,16 +360,17 @@ export class GameService {
     this.availableThemes.push(theme);
 
     // Select the new theme
-    this.setTheme(theme);
+    this.setTheme(theme.id);
 
     // Save custom themes to local storage
     const customThemes = this.availableThemes.filter(t => t.id.startsWith('custom_'));
-    this.storageService.setItem('custom_themes', customThemes);
+    this.storageService.setItem('custom_themes', JSON.stringify(customThemes));
   }
 
   private loadCustomThemes(): void {
-    const customThemes = this.storageService.getItem<StoreTheme[]>('custom_themes');
-    if (customThemes) {
+    const customThemesStr = this.storageService.getItem('custom_themes');
+    if (customThemesStr) {
+      const customThemes = JSON.parse(customThemesStr) as StoreTheme[];
       this.availableThemes.push(...customThemes);
     }
   }
